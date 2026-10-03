@@ -208,3 +208,8 @@ __marimo__/
 
 
 resources/pictures/
+resources/pictures_old/
+resources/pictures_prev/
+results/old_shots/
+results/clip_k4/
+*.stackdump

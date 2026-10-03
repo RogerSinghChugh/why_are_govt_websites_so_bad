@@ -1,0 +1,56 @@
+backbone=resnet101 (microsoft/resnet-101)  tiles=(2, 3)  dim=4096  n=33
+silhouette by k: k=2:0.202  k=3:0.179  k=4:0.205  k=5:0.194  k=6:0.189  k=7:0.191  k=8:0.182
+chosen k=4  silhouette=0.205
+--- cluster 0 (n=12) ---
+  australia/passport, brazil/tax_id, india/efiling, indonesia/tax_id, ireland/tax_id, ireland/passport, malaysia/tax_id, new_zealand/tax_id, new_zealand/passport, south_africa/tax_id, south_africa/efiling, south_africa/passport
+--- cluster 1 (n=12) ---
+  australia/tax_id, australia/efiling, brazil/efiling, canada/efiling, canada/passport, india/tax_id, india/passport, indonesia/efiling, japan/tax_id, japan/efiling, japan/passport, malaysia/passport
+--- cluster 2 (n=7) ---
+  brazil/passport, canada/tax_id, ireland/efiling, malaysia/efiling, united_kingdom/tax_id, united_kingdom/efiling, united_kingdom/passport
+--- cluster 3 (n=2) ---
+  indonesia/passport, new_zealand/efiling
+
+cluster x country:
+country  australia  brazil  canada  india  indonesia  ireland  japan  malaysia  new_zealand  south_africa  united_kingdom
+cluster                                                                                                                  
+0                1       1       0      1          1        2      0         1            2             3               0
+1                2       1       2      2          1        0      3         1            0             0               0
+2                0       1       1      0          0        1      0         1            0             0               3
+3                0       0       0      0          1        0      0         0            1             0               0
+
+cluster x category:
+category  efiling  passport  tax_id
+cluster                            
+0               2         4       6
+1               5         4       3
+2               3         2       2
+3               1         1       0
+
+country cohesion (within-country similarity minus similarity to all other countries):
+         group  n  within_sim  between_sim    gap
+united_kingdom  3       0.958        0.791  0.167
+        canada  3       0.883        0.791  0.091
+         japan  3       0.828        0.773  0.055
+         india  3       0.833        0.802  0.032
+     australia  3       0.836        0.807  0.028
+  south_africa  3       0.817        0.790  0.027
+        brazil  3       0.806        0.798  0.008
+   new_zealand  3       0.784        0.786 -0.002
+       ireland  3       0.774        0.788 -0.014
+     indonesia  3       0.715        0.753 -0.039
+      malaysia  3       0.686        0.756 -0.070
+
+category cohesion:
+   group  n  within_sim  between_sim    gap
+ efiling 11       0.788        0.788 -0.000
+  tax_id 11       0.783        0.789 -0.006
+passport 11       0.779        0.788 -0.009
+
+lowest per-sample silhouette:
+             file  cluster  silhouette
+new_zealand_1.png        0      -0.372
+     canada_2.png        1      -0.166
+    ireland_1.png        0       0.000
+  australia_1.png        1       0.050
+     brazil_1.png        0       0.095
+  australia_2.png        1       0.099
