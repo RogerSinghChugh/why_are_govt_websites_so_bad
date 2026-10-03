@@ -213,3 +213,4 @@ resources/pictures_prev/
 results/old_shots/
 results/clip_k4/
 *.stackdump
+.hallmark/

@@ -1,0 +1,75 @@
+/* Hallmark · tokens · theme: Almanac (constructed from color.md rules, no catalog token file present)
+ * paper band: light · display style: high-contrast-serif · accent hue: warm (32°) · anchor hue: 75 */
+:root {
+  /* type — 2 + 1: display serif, body sans, mono outlier for worked examples + wordmark */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-outlier: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+
+  /* colour — OKLCH, tinted toward the anchor hue, one accent */
+  --color-paper: oklch(96.5% 0.012 75);
+  --color-paper-2: oklch(93.5% 0.014 75);
+  --color-rule: oklch(84% 0.012 75);
+  --color-neutral: oklch(56% 0.012 70);
+  --color-muted: oklch(42% 0.012 65);
+  --color-ink: oklch(20% 0.014 60);
+  --color-accent: oklch(46% 0.16 32);
+  --color-accent-soft: oklch(90% 0.05 40);
+  --color-plot-bg: oklch(99% 0.004 75);
+  --color-focus: oklch(55% 0.19 55);
+
+  /* scale — major third from 16 px */
+  --text-xs: 0.8rem;
+  --text-sm: 0.9rem;
+  --text-base: 1.0625rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5625rem;
+  --text-xl: 1.9531rem;
+  --text-2xl: 2.4414rem;
+  --text-display-s: clamp(2.2rem, 3.5vw + 1rem, 3.6rem);
+
+  /* space — 4 pt scale */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* layout */
+  --page-gutter: clamp(1rem, 4vw, 2.5rem);
+  --measure: 66ch;
+  --measure-wide: 62rem;
+  --rule-hair: 1px solid var(--color-rule);
+  --radius-sm: 2px;
+
+  /* motion — Long Document is motion-off; tokens kept for focus/active only */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-sticky: 200;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: oklch(15% 0.012 60);
+    --color-paper-2: oklch(19% 0.014 60);
+    --color-rule: oklch(32% 0.012 60);
+    --color-neutral: oklch(62% 0.012 70);
+    --color-muted: oklch(74% 0.01 75);
+    --color-ink: oklch(93% 0.008 80);
+    --color-accent: oklch(72% 0.13 38);
+    --color-accent-soft: oklch(32% 0.06 40);
+    --color-plot-bg: oklch(97% 0.004 75);
+    --color-focus: oklch(72% 0.17 55);
+  }
+}

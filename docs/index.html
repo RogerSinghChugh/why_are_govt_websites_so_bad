@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Government portals, sorted by look</title>
+<meta name="description" content="33 government service pages from 11 countries, embedded with CLIP and clustered with k-means. Every step explained with a small worked example, then what the clusters show.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=IBM+Plex+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* Hallmark · genre: editorial · macrostructure: Long Document · theme: Almanac (constructed) · enrichment: none · nav: N9 Edge-aligned minimal · footer: Ft4 Dense colophon · tone: editorial · anchor hue: 75
+ * inferred context: audience = readers of the repo without an ML background · use = read, then open the cluster plot · tone = editorial
+ * F4 Step sequence knobs: numbering=1.0/2.0, layout=vertical stack, connector=none · C1 chip knobs: shape=rectangular, density=compact, adornment=arrow
+ * outlier slots: worked examples + colophon (2) · contrast: pass (40–41) · nav/footer/hero: pass (42–45) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49) · mobile: pass (34, 49, 50–57)
+ * Hallmark · pre-emit critique: P4 H4 E4 S4 R5 V4 */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; scroll-behavior: auto; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  font-variant-numeric: oldstyle-nums;
+  padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+}
+
+/* ---------- nav · N9 edge-aligned minimal ---------- */
+.nav-edge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--page-gutter);
+  border-bottom: var(--rule-hair);
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 48;
+  font-size: var(--text-md);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--color-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  min-width: 0;
+}
+.cta {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.cta:hover { background: var(--color-ink); color: var(--color-paper); }
+.cta:active { transform: translateY(1px); }
+a:focus-visible, .cta:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+
+/* ---------- article grid: narrow measure, figures may step out to a wider track ---------- */
+.prose {
+  display: grid;
+  grid-template-columns:
+    minmax(var(--page-gutter), 1fr)
+    minmax(0, var(--measure))
+    minmax(var(--page-gutter), 1fr);
+  padding-block: var(--space-xl) var(--space-2xl);
+}
+.prose > * { grid-column: 2; min-width: 0; }
+.prose > .fig--wide {
+  grid-column: 1 / -1;
+  width: min(100%, var(--measure-wide));
+  justify-self: center;
+  padding-inline: var(--page-gutter);
+}
+
+/* ---------- type ---------- */
+.dateline {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--color-muted);
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--space-md);
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 144;
+  font-size: var(--text-display-s);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-lg);
+  overflow-wrap: anywhere;
+  min-width: 0;
+  max-width: 18ch;
+}
+.lede {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: "opsz" 24;
+  font-size: var(--text-md);
+  line-height: 1.5;
+  margin: 0 0 var(--space-lg);
+}
+.contents {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  margin: 0 0 var(--space-2xl);
+  padding-bottom: var(--space-md);
+  border-bottom: var(--rule-hair);
+}
+h2 {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--text-md);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  margin: var(--space-2xl) 0 var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+h2::before {
+  content: "";
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--color-accent);
+}
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 48;
+  font-size: var(--text-lg);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-xs);
+}
+p { margin: 0 0 var(--space-md); }
+ul, ol { margin: 0 0 var(--space-md); padding-left: var(--space-lg); }
+li { margin-bottom: var(--space-xs); }
+a { color: var(--color-ink); text-decoration: underline; text-decoration-color: var(--color-accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+mark {
+  color: var(--color-ink);
+  background: linear-gradient(180deg, transparent 38%, var(--color-accent-soft) 38%, var(--color-accent-soft) 92%, transparent 92%);
+  padding: 0 0.1em;
+}
+code { font-family: var(--font-outlier); font-size: 0.92em; }
+strong { font-weight: 700; }
+em { font-style: italic; }
+.aside {
+  border-left: 2px solid var(--color-accent);
+  padding: var(--space-xs) 0 var(--space-xs) var(--space-md);
+  margin: var(--space-lg) 0;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+.aside p:last-child { margin-bottom: 0; }
+
+/* ---------- worked examples · typographic frame, no fake window chrome ---------- */
+.example {
+  position: relative;
+  font-family: var(--font-outlier);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  background: var(--color-paper-2);
+  border-top: var(--rule-hair);
+  border-bottom: var(--rule-hair);
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+  margin: var(--space-md) 0 var(--space-lg);
+  overflow-x: auto;
+  white-space: pre;
+  tab-size: 4;
+  font-variant-numeric: tabular-nums;
+}
+.example::before {
+  content: attr(data-label);
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-md);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* ---------- steps · F4 step sequence, stage stacked above heading ---------- */
+.steps { list-style: none; padding: 0; margin: var(--space-lg) 0 0; counter-reset: stage; }
+.steps > li { margin: 0 0 var(--space-2xl); padding-top: var(--space-md); border-top: var(--rule-hair); }
+.steps .stage {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "opsz" 24;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  margin-bottom: var(--space-xs);
+}
+
+/* ---------- figures ---------- */
+.fig { margin: var(--space-xl) 0; }
+.fig img { display: block; width: 100%; height: auto; border: var(--rule-hair); background: var(--color-plot-bg); }
+.fig figcaption { font-size: var(--text-sm); color: var(--color-muted); margin-top: var(--space-xs); line-height: 1.5; }
+.fig figcaption a { white-space: nowrap; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); }
+.pair figure { margin: 0; }
+.pair img { display: block; width: 100%; height: auto; border: var(--rule-hair); }
+.pair figcaption { font-size: var(--text-xs); color: var(--color-muted); margin-top: var(--space-2xs); }
+.examples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr)); gap: var(--space-md); margin: var(--space-lg) 0 var(--space-xl); }
+.examples figure { margin: 0; }
+.examples img { display: block; width: 100%; height: auto; border: var(--rule-hair); }
+.examples figcaption { font-size: var(--text-xs); color: var(--color-muted); margin-top: var(--space-2xs); line-height: 1.4; }
+
+/* ---------- tables ---------- */
+.table-scroll { overflow-x: auto; margin: var(--space-md) 0 var(--space-lg); }
+table { border-collapse: collapse; width: 100%; font-size: var(--text-sm); font-variant-numeric: tabular-nums lining-nums; }
+th { text-align: left; font-weight: 500; font-variant-caps: all-small-caps; letter-spacing: 0.06em; color: var(--color-muted); padding: var(--space-xs) var(--space-lg) var(--space-xs) 0; border-bottom: 1px solid var(--color-ink); }
+td { padding: var(--space-xs) var(--space-lg) var(--space-xs) 0; border-bottom: var(--rule-hair); vertical-align: top; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+tr.is-chosen td { font-weight: 700; }
+
+/* ---------- footer · Ft4 dense colophon ---------- */
+.foot-dense {
+  font-family: var(--font-outlier);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-muted);
+  max-width: var(--measure);
+  margin: var(--space-3xl) auto 0;
+  padding: var(--space-lg) var(--page-gutter) 0;
+  border-top: var(--rule-hair);
+}
+.foot-dense p { margin: 0; }
+
+@media (min-width: 40rem) {
+  .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .example { font-size: 0.92rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="nav-edge">
+  <a class="wordmark" href="#top">Portals, sorted</a>
+  <a class="cta" href="https://github.com/RogerSinghChugh/why_are_govt_websites_so_bad">Repository ↗</a>
+</header>
+
+<main id="top">
+<article class="prose">
+
+<p class="dateline">3 October 2026 · 33 screenshots · 11 countries · 3 services each</p>
+<h1>Government portals, sorted by look</h1>
+<p class="lede">One screenshot each of a tax‑number page, a tax‑filing page and a passport page from eleven countries. The pictures go into an image model, the numbers that come out go into a clustering algorithm, and the algorithm sorts the pages into visual families. This page explains every step with a small worked example, then shows what came out.</p>
+<p class="contents">Contents: <a href="#origin">where the idea came from</a> · <a href="#data">the data</a> · <a href="#pipeline">the pipeline, step by step</a> · <a href="#results">what came out</a> · <a href="#reproduce">reproduce it</a></p>
+
+<h2 id="origin">Where the idea came from</h2>
+<p>The method is borrowed. In a video and an accompanying <a href="https://sabrinas.space/">blog post</a>, Sabrina collected 2,671 screenshots of popular websites from many countries, turned each one into a list of numbers with an image model (ResNet101), flattened those lists to two dimensions with t‑SNE, and drew the screenshots at their coordinates. Japan’s sites sat in their own region of the map: lighter, denser, more text. The picture did the arguing.</p>
+<p>This project asks a narrower question with the same tools. Government service pages are the sites people are forced to use. Do they sort into visual families too, and if so, what are the families?</p>
+
+<h2 id="data">The data</h2>
+<p>Eleven countries: Australia, Brazil, Canada, India, Indonesia, Ireland, Japan, Malaysia, New Zealand, South Africa and the United Kingdom. For each, three pages were chosen by hand: the page where you apply for or look up a national tax identifier, the page where you file income tax online, and the page where you apply for a passport. That is 33 URLs in a spreadsheet.</p>
+<p>Each page was opened in Chromium at 1920 × 1080 and photographed once, without scrolling. What you see is what a person sees on arrival. Nine of the 33 pages arrived behind a cookie banner, a notice modal, or both, and one needed four modals dismissed in a row before any content was visible. Those overlays had to go, because in the first attempt at clustering they were most of what the algorithm saw.</p>
+
+<figure class="fig fig--wide">
+  <div class="pair">
+    <figure><img src="assets/before_banner.jpg" width="1100" height="619" alt="A tax-number portal with a full-width cookie banner covering the bottom of the viewport" loading="lazy"><figcaption>Before: the same page as captured in the first run, banner included.</figcaption></figure>
+    <figure><img src="assets/after_banner.jpg" width="1100" height="619" alt="The same tax-number portal with the banner and interstitial modals dismissed" loading="lazy"><figcaption>After: banner and four interstitials clicked away before the shot.</figcaption></figure>
+  </div>
+  <figcaption>Every page gets the same treatment: wait for the network to go quiet, click reject, accept or close buttons by their accessible names in six languages, hide the containers that known consent managers inject, wait ten seconds, then shoot.</figcaption>
+</figure>
+
+<h2 id="pipeline">The pipeline, step by step</h2>
+<p>Six stages, in order. Each one is small. The worked examples use two, three or four numbers so you can check them by hand; the real vectors have 512 or 1,024 numbers, and the arithmetic is identical.</p>
+
+<ol class="steps">
+
+<li>
+<span class="stage">1.0</span>
+<h3>Capture</h3>
+<p>Playwright drives a real Chromium window. For each URL it loads the page, waits up to fifteen seconds for network activity to stop, runs the banner handler, settles for ten seconds, runs the handler again for anything that appeared late, and saves a PNG named after the country and service. One run of the script produces all 33 files.</p>
+</li>
+
+<li>
+<span class="stage">2.0</span>
+<h3>Turn the whole page into numbers</h3>
+<p>An <strong>embedding</strong> is a list of numbers that stands in for an image. The list is produced by a neural network trained so that images which look alike produce lists that point in similar directions. We use CLIP, a model from OpenAI that learned from millions of image–caption pairs, in its ViT‑B/32 size. Give it an image and it returns <mark>512 numbers</mark>, always 512, for any image.</p>
+<p>CLIP expects a 224 × 224 input. We resize the full 1920 × 1080 screenshot down to that square, squashing rather than cropping, so no part of the page is thrown away. At that size a web page is a blur: body text becomes grey texture and small controls vanish. What survives is the big picture, literally: overall colour, where the dark and light regions are, whether there is a photograph.</p>
+</li>
+
+<li>
+<span class="stage">3.0</span>
+<h3>Turn six tiles into numbers, then average them</h3>
+<p>To let the model see detail, the same screenshot is also cut into a grid of two rows by three columns, six tiles of 640 × 540 each. Each tile is squashed to 224 × 224 and embedded on its own, giving six separate lists of 512 numbers. Those six lists are then <strong>averaged position by position</strong>: the first number of the result is the mean of the six first numbers, the second is the mean of the six second numbers, and so on down to position 512.</p>
+<pre class="example" data-label="averaging two tiles, with 3 numbers instead of 512">tile 1  = [0.9, 0.1, 0.4]
+tile 2  = [0.7, 0.3, 0.6]
+
+mean    = [(0.9+0.7)/2, (0.1+0.3)/2, (0.4+0.6)/2]
+        = [0.8, 0.2, 0.5]</pre>
+<p>Why average instead of keeping all six? Three reasons. Laid end to end, six lists would make 3,072 numbers in which the position of each tile matters, so two pages with the same style but the hero on different sides would look different. With only 33 pages, 3,072 dimensions is a lot of room for noise. And averaging reinforces whatever the tiles agree on while cancelling what is specific to one tile: if five tiles are dense text and one is a logo, the mean leans toward dense text, which is what “style” should mean.</p>
+</li>
+
+<li>
+<span class="stage">4.0</span>
+<h3>Join the two halves and normalise</h3>
+<p>Each page now has two lists of 512: the whole‑page embedding and the tile average. They are laid end to end into one list of 1,024. Positions 0 to 511 hold the whole‑page numbers; positions 512 to 1,023 hold the tile numbers. Nothing is mixed across the halves.</p>
+<pre class="example" data-label="concatenation, with 3 numbers per half">whole  = [0.6, 0.0, 0.8]        positions 0..2
+tiles  = [0.0, 1.0, 0.0]        positions 3..5
+
+joined = [0.6, 0.0, 0.8, 0.0, 1.0, 0.0]</pre>
+<p>Then every list is divided by its own <strong>length</strong>. Here “length” means the geometric kind: square every number, add them up, take the square root. Dividing by it leaves a list that still has the same count of numbers but whose length is exactly 1. This is called L2 normalisation.</p>
+<pre class="example" data-label="L2 normalisation, 2 numbers then 4">a = [3, 4]
+length = sqrt(3² + 4²) = sqrt(25) = 5
+a / 5  = [0.6, 0.8]
+
+c = [2, 0, 4, 4]
+length = sqrt(4 + 0 + 16 + 16) = sqrt(36) = 6
+c / 6  = [0.33, 0, 0.67, 0.67]
+
+v = [x0, x1, …, x511]
+length = sqrt(x0² + x1² + … + x511²)
+v / length  →  512 numbers, each divided by that one length</pre>
+<p>Two words get confused here. The <em>dimension</em> is the count of numbers, 512 or 1,024, fixed by the model. The <em>length</em>, also called the norm, is the geometric size, which varies from image to image. Normalising fixes the norm to 1 and leaves the dimension alone.</p>
+<p>Why divide at all? Because only the direction carries meaning. The raw numbers from CLIP come out larger for some images than others for reasons that have nothing to do with style. Two pages that look the same but produce lists of different size would seem far apart. After dividing, they coincide:</p>
+<pre class="example" data-label="direction is what survives">a = [3, 4]   → a / 5  = [0.6, 0.8]
+b = [6, 8]   → b / 10 = [0.6, 0.8]      same direction, now identical</pre>
+<p>Two practical consequences follow. Multiplying two normalised lists position by position and summing gives the <strong>cosine of the angle</strong> between them, a similarity score from −1 to 1. And k‑means, which measures straight‑line distance, is tied to that score on normalised lists by the identity distance² = 2 − 2 · cosine, so it ends up grouping by angle too. Each half is normalised before the join so the two halves carry equal weight, and the joined list is normalised again to tidy it back to length 1.</p>
+<p>This is different from the scalers you may know from scikit‑learn. <code>MinMaxScaler</code> and <code>StandardScaler</code> work <em>per column</em>: they take one position across all 33 pages and rescale that column. L2 normalisation works <em>per row</em>: it rescales one page’s numbers together and ignores the other pages.</p>
+<pre class="example" data-label="per row versus per column, 3 pages × 2 positions">            pos0   pos1
+page A        3      4        L2 per row:   A → [0.60, 0.80]
+page B        6      8                      B → [0.60, 0.80]
+page C        0      1                      C → [0.00, 1.00]
+
+MinMax per column (pos0 runs 0..6, pos1 runs 1..8):
+            A → [0.50, 0.43]   B → [1.00, 1.00]   C → [0.00, 0.00]</pre>
+<p>L2 makes A and B identical because they point the same way. MinMax keeps them far apart and pushes C into a corner, because it only cares about each column’s range. Column scaling is the right tool when features have different units, height in centimetres beside income in dollars. CLIP’s 512 positions are already on a shared scale, and rescaling each would inflate the noisy low‑variance positions and change the angles we want to keep.</p>
+</li>
+
+<li>
+<span class="stage">5.0</span>
+<h3>Cluster with k‑means</h3>
+<p>k‑means takes a number k and finds k groups. In plain words: place k centre points among the pages, assign every page to its nearest centre, move each centre to the average of the pages assigned to it, and repeat until nothing moves. The result depends on where the centres start, so the algorithm is run from twenty random starts and the tightest answer is kept. All of this happens in the 1,024‑dimensional space, not on a picture.</p>
+<p>k has to be chosen. We use the <strong>silhouette score</strong>: for each page, how much closer it is to the pages in its own cluster than to the pages in the nearest other cluster, scaled from −1 (clearly in the wrong group) to 1 (clearly in the right one). The average over all pages scores a clustering. Run k‑means for k from 2 to 8 and keep the k with the best average.</p>
+<div class="table-scroll">
+<table>
+<thead><tr><th>k</th><th class="num">silhouette</th><th>reading</th></tr></thead>
+<tbody>
+<tr class="is-chosen"><td>2</td><td class="num">0.264</td><td>best; one small unusual group against everything else</td></tr>
+<tr><td>3</td><td class="num">0.128</td><td></td></tr>
+<tr><td>4</td><td class="num">0.164</td><td></td></tr>
+<tr><td>5</td><td class="num">0.124</td><td>used below as a reading aid</td></tr>
+<tr><td>6</td><td class="num">0.117</td><td></td></tr>
+<tr><td>7</td><td class="num">0.137</td><td></td></tr>
+<tr><td>8</td><td class="num">0.164</td><td></td></tr>
+</tbody>
+</table>
+</div>
+<p>Scores in the 0.1 to 0.3 range mean the groups are real but soft. The first split is sharp; after that, the pages shade into one another rather than falling into boxes.</p>
+<div class="aside">
+<p><strong>Before k‑means we used Ward.</strong> Ward’s method is hierarchical: it starts with every page as its own cluster and repeatedly merges the two clusters whose merger raises within‑cluster spread the least. It minimises the same quantity as k‑means, so on this data the two agree almost everywhere. Ward’s extra gift is the dendrogram further down, which shows the whole merge order at once.</p>
+</div>
+</li>
+
+<li>
+<span class="stage">6.0</span>
+<h3>Draw it</h3>
+<p>A 1,024‑dimensional space cannot be drawn, so for the plots only, t‑SNE squashes each page down to two coordinates. t‑SNE works hard to keep each page’s nearest neighbours close on the map and does not promise anything about long distances. The cluster colours on the map come from k‑means in the full space, which is why one page can sit far from its cluster‑mates on paper and still belong with them. Read the map as a neighbourhood sketch, not a measurement.</p>
+</li>
+
+</ol>
+
+<div class="aside">
+<p><strong>What we tried first, and why it failed.</strong> The first version of this project skipped the image model. Each screenshot was shrunk to 512 × 512 greyscale, the raw pixel values were reduced with PCA to 22 numbers, and Ward clustered those. The clusters it found were “pages with a dark hero”, “pages with a dark footer” and “white pages”. Raw pixels mostly encode where the bright and dark areas are, and the cookie banners still present in several shots were driving placement. The silhouette was about 0.20 and the number of clusters changed between runs. Swapping pixels for CLIP embeddings and cleaning the inputs is what made the structure below appear.</p>
+</div>
+
+<h2 id="results">What came out</h2>
+<p>With k chosen by silhouette, the answer is two clusters: three pages with a pastel, illustrated, notice‑heavy look on one side, and the other thirty on the other. That split is real, and it was the first thing the data said even on the uncleaned screenshots. It is also not very informative on its own, so the five‑cluster cut is used as a reading aid. Five is not a claim that five sharp design families exist; the silhouette falls off after the first split.</p>
+
+<figure class="fig">
+  <img src="assets/silhouette_by_k.png" width="770" height="440" alt="Line chart of silhouette score against k from 2 to 8, peaking at k equals 2" loading="lazy">
+  <figcaption>Silhouette by k. The peak at 2 is the pastel group against everything else; the rest of the curve is flat.</figcaption>
+</figure>
+
+<figure class="fig fig--wide">
+  <img src="assets/cluster_plot_k5.png" width="1650" height="1100" alt="Scatter plot of 33 pages on a t-SNE projection, coloured by five k-means clusters, with an X marking each cluster's mean" loading="lazy">
+  <figcaption>k‑means with k = 5, drawn on the t‑SNE projection. Each dot is one page, labelled country / service; the X is the mean of each cluster’s dots. <a href="assets/cluster_plot_k2.png">The k = 2 version</a> colours the same dots two ways.</figcaption>
+</figure>
+
+<figure class="fig fig--wide">
+  <img src="assets/tsne_map_k5.jpg" width="2000" height="1231" alt="The same t-SNE projection with a thumbnail of every screenshot at its coordinates, framed in its cluster colour" loading="lazy">
+  <figcaption>The same map with the screenshots themselves. This is the view the original video used; the frame colour is the k‑means cluster. <a href="assets/cluster_sheet_k5.jpg">Every page grouped by cluster</a> is on a separate sheet.</figcaption>
+</figure>
+
+<h2>The five clusters</h2>
+<p>One example page from each, then what the members have in common.</p>
+<div class="examples">
+  <figure><img src="assets/ex_plain.jpg" width="900" height="506" alt="A white page with a blue header band, a large left-aligned heading and body text" loading="lazy"><figcaption>White, text‑first (14 pages)</figcaption></figure>
+  <figure><img src="assets/ex_dense.jpg" width="900" height="506" alt="A dense portal with a banner, grids of icon tiles and a news column" loading="lazy"><figcaption>Dense portals and banners (9)</figcaption></figure>
+  <figure><img src="assets/ex_hero.jpg" width="900" height="506" alt="A full-width landscape photograph with a login card on the right" loading="lazy"><figcaption>Full‑bleed scenic hero (4)</figcaption></figure>
+  <figure><img src="assets/ex_empty.jpg" width="900" height="506" alt="A mostly blank white page with a small header and a sign-in box" loading="lazy"><figcaption>Near‑empty white (3)</figcaption></figure>
+  <figure><img src="assets/ex_pastel.jpg" width="900" height="506" alt="A page with pastel green and cream panels, cartoon mascots and a boxed notice" loading="lazy"><figcaption>Pastel panels, mascots, notices (3)</figcaption></figure>
+</div>
+<ol>
+<li><strong>White, text‑first service pages.</strong> White background, one brand‑colour header band, left‑aligned heading and body text, blue links, a button or two, little or no imagery. The dominant mode in the set. Pages with a notice carousel or a small illustration still land here as long as text carries the first screen.</li>
+<li><strong>Dense portals and banners.</strong> A wide banner photo or illustration of people or landmarks, grids of icon tiles, news lists, several competing calls to action, strong colour fills. Three or more distinct content blocks visible above the fold. The home‑page look rather than the single‑task look.</li>
+<li><strong>Full‑bleed scenic hero.</strong> One landscape photograph fills most of the viewport with a login card or a short headline on top and very little text. The closest these pages come to a consumer travel site. Three of the four are passport pages.</li>
+<li><strong>Near‑empty white.</strong> Most of the viewport is blank: a small header, then a form box or a block of terms. Single‑task, legal and transactional in tone, with no imagery at all.</li>
+<li><strong>Pastel panels, mascots and notices.</strong> Blocks of pastel background, illustrated mascot characters, red‑bordered notice boxes, carousels and many small links. The most distinct visual language in the set and the group the k = 2 split isolates.</li>
+</ol>
+
+<figure class="fig fig--wide">
+  <img src="assets/dendrogram.png" width="1980" height="880" alt="Ward dendrogram of the 33 pages, leaf labels coloured by country, with a three-page branch splitting off first on the left" loading="lazy">
+  <figcaption>The Ward dendrogram, leaves coloured by country. Reading from the top: the first branch to split off is the pastel group; several three‑page sets from one government merge with each other before merging with anything else.</figcaption>
+</figure>
+
+<h2>Observations across the set</h2>
+<ul>
+<li><strong>Service type does not determine style.</strong> The large white cluster holds tax‑number, tax‑filing and passport pages in equal measure. The one tendency by service is that the scenic‑hero pages are mostly passport pages.</li>
+<li><strong>Style follows the publishing organisation, not the task.</strong> Five of the eleven three‑page sets land entirely in one cluster, and the dendrogram shows the same: pages from one government merge with each other first.</li>
+<li><strong>The common case is plain.</strong> Fourteen of 33 pages are white, text‑led and low in saturation. The “dark and empty” style the original post found common on commercial sites is essentially absent here.</li>
+<li><strong>Imagery comes in two kinds that rarely share a page.</strong> Photographs are of landscapes or passport documents. Illustrations are of people or mascots.</li>
+<li><strong>Interstitials are common.</strong> Nine of 33 pages opened behind a banner or modal. Left in, they dominated the raw‑pixel clustering; removing them is what let style show through.</li>
+<li><strong>The 2‑D map is a sketch.</strong> k‑means runs in the 1,024‑dimensional space. One page is grouped with the small cluster at k = 2 yet sits far from it on the map, so distances on paper are suggestive, not literal.</li>
+</ul>
+<p>For comparison, the same pipeline with an ImageNet ResNet101 backbone, the features the original analysis used, gives a weaker silhouette (0.205 at k = 4). The pastel group still clusters together but is mixed with nine other pages, and ResNet rewards shared chrome such as identical header bars more than overall page style. CLIP separates style more cleanly on a sample this small.</p>
+<p>Caveats, briefly. Thirty‑three pages is a small sample, so the silhouette scores stay modest even though the structure is readable. Each page was photographed once, on one day, at one viewport size. The clusters describe how the pages look on arrival, not how they work.</p>
+
+<h2 id="reproduce">Reproduce it</h2>
+<p>The <a href="https://github.com/RogerSinghChugh/why_are_govt_websites_so_bad">repository</a> holds the spreadsheet of URLs, the capture script, the embedding and clustering script, and the results folder with every plot on this page plus <a href="https://github.com/RogerSinghChugh/why_are_govt_websites_so_bad/blob/main/results/observations.md">the written observations</a>. Python 3.10 and <code>uv</code> are the only prerequisites; the first run downloads the CLIP weights.</p>
+<pre class="example" data-label="three commands">uv sync
+uv run playwright install chromium
+uv run python take_screenshots.py            # 33 shots → resources/pictures/
+uv run python embed_cluster.py               # k by silhouette → results/
+uv run python embed_cluster.py --k 5         # the five-cluster reading aid
+uv run python embed_cluster.py --backbone resnet101 --out results/resnet101</pre>
+
+</article>
+</main>
+
+<footer class="foot-dense">
+  <p>Captured 3 October 2026 with Playwright and Chromium at 1920 × 1080. Embeddings: CLIP ViT‑B/32 via Hugging Face transformers, whole page plus a 2 × 3 tile mean, L2‑normalised. Clustering: scikit‑learn k‑means with twenty restarts, k by cosine silhouette; Ward for the dendrogram; t‑SNE for display. Set in Fraunces, IBM Plex Sans and JetBrains Mono. Method after sabrinas.space. Source and data at github.com/RogerSinghChugh/why_are_govt_websites_so_bad.</p>
+</footer>
+
+</body>
+</html>
